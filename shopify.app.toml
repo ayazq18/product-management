@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d7e761156fa6b9c7399ef1fe4564d52c"
-application_url = "https://framed-accessing-supporters-cannon.trycloudflare.com"
+application_url = "https://product-container-ff95aef3edf6.herokuapp.com/"
 embedded = true
 name = "product-management"
 handle = "product-management-23"
@@ -25,7 +25,8 @@ scopes = "write_products"
 redirect_urls = [
   "https://framed-accessing-supporters-cannon.trycloudflare.com/auth/callback",
   "https://framed-accessing-supporters-cannon.trycloudflare.com/auth/shopify/callback",
-  "https://framed-accessing-supporters-cannon.trycloudflare.com/api/auth/callback"
+  "https://framed-accessing-supporters-cannon.trycloudflare.com/api/auth/callback",
+  "https://product-container-ff95aef3edf6.herokuapp.com/auth/callback"
 ]
 
 [pos]
@@ -34,3 +35,4 @@ embedded = false
 [build]
 dev_store_url = "product-data-management.myshopify.com"
 automatically_update_urls_on_dev = true
+include_config_on_deploy = true
