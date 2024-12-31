@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d7e761156fa6b9c7399ef1fe4564d52c"
-application_url = "https://rolls-carry-removed-commented.trycloudflare.com"
+application_url = "https://framed-accessing-supporters-cannon.trycloudflare.com"
 embedded = true
 name = "product-management"
 handle = "product-management-23"
@@ -23,9 +23,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://rolls-carry-removed-commented.trycloudflare.com/auth/callback",
-  "https://rolls-carry-removed-commented.trycloudflare.com/auth/shopify/callback",
-  "https://rolls-carry-removed-commented.trycloudflare.com/api/auth/callback"
+  "https://framed-accessing-supporters-cannon.trycloudflare.com/auth/callback",
+  "https://framed-accessing-supporters-cannon.trycloudflare.com/auth/shopify/callback",
+  "https://framed-accessing-supporters-cannon.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
