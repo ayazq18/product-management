@@ -1,0 +1,12 @@
+{
+    "builds": [
+      {
+        "src": "your-build-script.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "hooks": {
+      "build": "prisma generate && your-build-command"
+    }
+  }
+  
