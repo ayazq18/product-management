@@ -360,3 +360,20 @@ This template uses [Remix](https://remix.run). The following Shopify tools are a
 - [App extensions](https://shopify.dev/docs/apps/app-extensions/list)
 - [Shopify Functions](https://shopify.dev/docs/api/functions)
 - [Getting started with internationalizing your app](https://shopify.dev/docs/apps/best-practices/internationalization/getting-started)
+
+
+
+//Custom Instructions
+
+[I have used two Approches for creating this app]
+
+1. I have used the graphql query to fetch, create, update and delete the products. (This code is comment out)
+2. I have created my own custom backened for the CRUD operation with shopify-api-node. (This is currently running)
+3. I have added the functionality to add the images to AWS S3 bucket for adding it to the shopify product.
+
+[Custom Backened]
+Created on Node, express and AWS S3 for image upload
+
+[Frontend]
+As instructed I have used the polaris components.
+Majorly focussed on the functionality.

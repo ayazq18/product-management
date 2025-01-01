@@ -5,7 +5,6 @@ import { useFetcher } from "@remix-run/react";
 export const ProductModal = ({
   active,
   handleModalChange,
-  setIsSaving,
   title,
   setTitle,
   description,
@@ -23,24 +22,24 @@ export const ProductModal = ({
   setActive,
   isEditMode,
 }) => {
-
   const fetcher = useFetcher();
-
 
   const handleImageFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append("file", file); 
-      formData.append("fileName", file.name); 
-      formData.append("fileType", file.type); 
+      formData.append("file", file);
+      formData.append("fileName", file.name);
+      formData.append("fileType", file.type);
 
       try {
-
-        const response = await fetch("http://localhost:5000/uploadFiles", {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          "http://localhost:5000/files/uploadFile",
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
 
         const data = await response.json();
         if (!response.ok) {
@@ -48,18 +47,17 @@ export const ProductModal = ({
         }
 
         if (data) {
-          setImg(data.fileUrl); 
+          setImg(data.fileUrl);
         } else {
-          throw new Error('Failed to upload image');
+          throw new Error("Failed to upload image");
         }
       } catch (error) {
         console.error("Error uploading image:", error);
-      } 
+      }
     }
   };
 
   const handleSave = async () => {
-    setIsSaving(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -71,7 +69,7 @@ export const ProductModal = ({
     if (isEditMode) {
       formData.append("id", id);
       await fetcher.submit(formData, {
-        method: "POST",
+        method: "PUT",
         action: "/app/products/edit",
       });
     } else {
@@ -127,32 +125,73 @@ export const ProductModal = ({
             type="text"
           />
 
-          {/*
           {img ? (
-            <div>
+            <div style={styles.imagePreviewContainer}>
               <Image
-                source={img} 
+                source={img}
                 alt="Product Image"
-                style={{ width: 100, height: 100 }}
+                style={styles.imagePreview}
               />
-              <input
-                label="Update Image"
-                type="file"
-                // value={img}
-                onChange={handleImageFileChange} 
-              />
+              <div style={styles.uploadContainer}>
+                <input
+                  style={styles.inputFile}
+                  label="Update Image"
+                  type="file"
+                  onChange={handleImageFileChange}
+                />
+              </div>
             </div>
           ) : (
-            <input
-              label="Upload Image"
-              type="file"
-              value={img}
-              onChange={handleImageFileChange}
-            />
+            <div style={styles.uploadContainer}>
+              <input
+                style={styles.inputFile}
+                label="Upload Image"
+                type="file"
+                onChange={handleImageFileChange}
+              />
+            </div>
           )}
-            */}
         </FormLayout>
       </Modal.Section>
     </Modal>
   );
+};
+
+const styles = {
+  uploadContainer: {
+    marginTop: 20,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  inputFile: {
+    backgroundColor: "#fafafa",
+    border: "2px dashed #007cba",
+    padding: "15px 20px",
+    fontSize: "16px",
+    width: "80%",
+    textAlign: "center",
+    cursor: "pointer",
+    borderRadius: "8px",
+    outline: "none",
+    transition: "all 0.3s ease",
+  },
+  inputFileHover: {
+    borderColor: "#005f8a",
+    backgroundColor: "#e5f7fd",
+  },
+  imagePreviewContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 15,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    borderRadius: "8px",
+    objectFit: "cover",
+  },
 };

@@ -8,66 +8,47 @@ import {
   Thumbnail,
   Toast,
 } from "@shopify/polaris";
-import { authenticate } from "../shopify.server";
 import { json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { ProductModal } from "./modal";
 
-export const loader = async ({ request }) => {
-  const { admin } = await authenticate.admin(request);
-  const response = await admin.graphql(`
-    {
-      products(first: 10) {
-        edges {
-          node {
-            id
-            title
-            handle
-            status
-            description
-            vendor
-            variants(first: 10) {
-              edges {
-                node {
-                  id
-                  price
-                  barcode
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `);
+import axios from "axios";
 
-  const responseJson = await response.json();
-  console.log(responseJson.data.products.edges);
-  return json(responseJson);
+export const loader = async ({ request }) => {
+
+  let products = [];
+    try {
+      const response = await axios.get("http://localhost:5000/products/fetchAll");
+
+      const responseData = response.data;
+
+      if (responseData ) {
+        products = responseData;
+      }
+    } catch (error) {
+      console.error("Error during axios request execution:", error);
+    }
+  return json({ products });
 };
+
 
 const ProductTable = () => {
   const data = useLoaderData();
   const fetcher = useFetcher();
-  const products = data.data.products.edges;
-  console.log('----->', products)
+  const products = data.products;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState();
   const [vendor, setVendor] = useState("");
-  // const [img, setImg] = useState('');
+  const [img, setImg] = useState('');
   const [id, setId] = useState();
   const [variantId, setVariantId] = useState();
-
-  // console.log('----->', products)
 
   const [active, setActive] = useState(false);
 
   const [toastActive, setToastActive] = useState(false);
   const [toastContent, setToastContent] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [deletingProductId, setDeletingProductId] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -83,11 +64,12 @@ const ProductTable = () => {
     if (product) {
       setIsEditMode(true);
       setTitle(product.title);
-      setDescription(product.description);
-      setPrice(product.variants.edges[0]?.node.price);
+      setDescription(product.body_html);
+      setPrice(product.variants?.[0]?.price);
       setVendor(product.vendor);
       setId(product.id);
-      setVariantId(product.variants.edges[0]?.node.id);
+      setVariantId(product?.variants?.[0]?.id);
+      setImg(product?.image?.src)
     } else {
       setIsEditMode(false);
       setTitle("");
@@ -96,9 +78,9 @@ const ProductTable = () => {
       setVendor("");
       setId(null);
       setVariantId(null);
-      // setImg('')
+      setImg('')
     }
-    setActive(true); 
+    setActive(true);
   };
 
   const handleModalChange = useCallback(() => {
@@ -110,7 +92,6 @@ const ProductTable = () => {
   }, []);
 
   useEffect(() => {
-    // Check if the fetcher state is idle and the data is not being loaded again.
     if (fetcher.state === "idle" && fetcher.data) {
       if (fetcher.data.success) {
         setToastContent(
@@ -120,31 +101,29 @@ const ProductTable = () => {
         );
         setToastActive(true);
         setActive(false);
-        setIsSaving(false);
         setDeletingProductId(null);
 
         fetcher.load("/app");
       } else if (fetcher.data.error) {
         console.error(fetcher.data.error);
-        setIsSaving(false);
       }
     }
   }, [fetcher.state, fetcher.data]);
 
-  const rows = products.map((product) => [
-    // <Thumbnail
-    //   key={product.node.id}
-    //   source={product.node.images.edges[0]?.node.originalSrc || ""}
-    //   alt={product.node.images.edges[0]?.node.altText || "Image not available"}
-    // />,
-    product.node.title,
-    product.node.description,
-    product.node.vendor,
-    product.node.variants.edges[0]?.node.price || "",
-    <Button onClick={() => handleEdit(product.node)}>Edit</Button>,
+  const rows = products?.map((product) => [
+    <Thumbnail
+      key={product?.id}
+      source={product?.image?.src || ""}
+      alt={product?.image?.alt || "Image not available"}
+    />,
+    product.title,
+    product.body_html,
+    product.vendor,
+    product.variants[0]?.price || "",
+    <Button onClick={() => handleEdit(product)}>Edit</Button>,
     <Button
-      onClick={() => handleDelete(product.node.id)}
-      loading={deletingProductId === product.node.id}
+      onClick={() => handleDelete(product.id)}
+      loading={deletingProductId === product.id}
     >
       Delete
     </Button>,
@@ -171,11 +150,13 @@ const ProductTable = () => {
                 "text",
                 "text",
                 "text",
+                "text",
                 "number",
                 "text",
                 "text",
               ]}
               headings={[
+                "Images",
                 "Product Title",
                 "Description",
                 "Vendor",
@@ -192,7 +173,6 @@ const ProductTable = () => {
       <ProductModal
         active={active}
         handleModalChange={handleModalChange}
-        setIsSaving={setIsSaving}
         title={title}
         setTitle={setTitle}
         description={description}
@@ -201,15 +181,15 @@ const ProductTable = () => {
         setPrice={setPrice}
         vendor={vendor}
         setVendor={setVendor}
-        // img={img}
-        // setImg={setImg}
+        img={img}
+        setImg={setImg}
         id={id}
         setId={setId}
         variantId={variantId}
         setVariantId={setVariantId}
         setActive={setActive}
-        isEditMode = {isEditMode}
-        setIsEditMode = {setIsEditMode}
+        isEditMode={isEditMode}
+        setIsEditMode={setIsEditMode}
       />
 
       {toastActive && (
